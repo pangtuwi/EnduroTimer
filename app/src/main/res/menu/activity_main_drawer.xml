@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_loadEvent"
+            android:icon="@android:drawable/stat_sys_download"
+            android:title="Load Event" />
+        <item
+            android:id="@+id/nav_syncEvent"
+            android:icon="@android:drawable/ic_popup_sync"
+            android:title="Sync Event Data" />
+    </group>
+
+    <item android:title="Race Event">
+        <menu>
+            <item
+                android:id="@+id/nav_timeRace"
+                android:icon="@android:drawable/ic_media_play"
+                android:title="Start Timing" />
+            <item
+                android:id="@+id/nav_eventDetails"
+                android:icon="@android:drawable/ic_menu_info_details"
+                android:title="Details" />
+            <item
+                android:id="@+id/nav_eventEntries"
+                android:icon="@android:drawable/ic_menu_manage"
+                android:title="Entries" />
+            <item
+                android:id="@+id/nav_eventStages"
+                android:icon="@android:drawable/ic_menu_mylocation"
+                android:title="Stages" />
+            <item
+                android:id="@+id/nav_eventResults"
+                android:icon="@android:drawable/ic_menu_report_image"
+                android:title="Results" />
+
+        </menu>
+    </item>
+
+</menu>

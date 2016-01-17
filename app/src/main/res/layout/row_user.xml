@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="75dp">
+
+    <!--
+    <ImageView
+        android:id="@+id/img_thumbnail"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="25dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:scaleType="centerInside"
+     /> -->
+
+    <TextView
+        android:id="@+id/row_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentLeft="true"
+        android:textSize="18dp"
+        android:textStyle="bold"
+    />
+
+    <TextView
+        android:id="@+id/row_user_roundscore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/row_user_name"
+        android:layout_alignLeft="@+id/row_user_name"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/rowround_rounddate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/row_user_roundscore"
+        android:textSize="16dp"
+        android:layout_marginLeft="80dp"
+
+    />
+
+
+
+
+</RelativeLayout>
