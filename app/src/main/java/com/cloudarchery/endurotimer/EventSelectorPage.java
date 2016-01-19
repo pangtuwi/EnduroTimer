@@ -33,7 +33,7 @@ public class EventSelectorPage extends Fragment implements AdapterView.OnItemCli
 
         mainListView = (ListView) rootView.findViewById(R.id.stage_selector_page_listview);
         mainListView.setOnItemClickListener(this);
-        mJSONAdapter = new JSONAdapterStagesList(getActivity(), getActivity().getLayoutInflater());
+        mJSONAdapter = new JSONAdapterEventsList(getActivity(), getActivity().getLayoutInflater());
         mainListView.setAdapter(mJSONAdapter);
 
         if (myApp.CDS.stages.length() > 0) {
