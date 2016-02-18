@@ -38,7 +38,9 @@ public class MyApp extends Application {
         stageIsSelected = false;
         timerHistoryList = new ArrayList<>();
         CDS = new CloudData();
+        Log.d("EnduroTimer", "CDS Initilise Running");
         CDS.InitialiseCDS();
+        Log.d("EnduroTimer", "CDS Initilise Run Finished");
     }
 
 

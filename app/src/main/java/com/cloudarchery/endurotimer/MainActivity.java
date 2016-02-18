@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        TV_ConnectionStatus = (TextView) findViewById(R.id.main_page_connectionstatus);
+       /* TV_ConnectionStatus = (TextView) findViewById(R.id.main_page_connectionstatus);
 
         if (myAppState.CDS.connected) {
             TV_ConnectionStatus.setText("connected");
@@ -108,6 +108,8 @@ public class MainActivity extends AppCompatActivity
 
 
         TV_NFCStatus = (TextView) findViewById(R.id.main_page_NFCstatus);
+
+        */
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (mNfcAdapter == null) {
@@ -118,17 +120,33 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        if (!mNfcAdapter.isEnabled()) {
+ /*       if (!mNfcAdapter.isEnabled()) {
             TV_NFCStatus.setText("NFC is disabled.");
 
         } else {
            TV_NFCStatus.setText("NFC is Enabled");
         }
+        */
+
+        Log.d ("EnduroTimer", "Setting listener for No Event ID");
+        myAppState.CDS.myNoEventIDListener = new CloudData.OnNoEventIDListener() {
+            @Override
+            public void onNoEventIDFound() {
+                Log.d("EnduroTimer","No Event ID Found : Listener Called, Starting Page");
+                displayView(5); //Show EventSelector
+            }
+        };
 
         handleIntent(getIntent());
 
-        displayView(0);   //Display Main Page
-    }
+        if (!myAppState.CDS.hasEventID) {
+            Log.d("EnduroTimer","No Event ID Found : Starting Page");
+            displayView(5); //Show EventSelector
+        } else {
+            displayView(0);   //Display Main Page
+        }
+
+    } //onCreate
 
 
     @Override
@@ -199,27 +217,30 @@ public class MainActivity extends AppCompatActivity
         switch (viewID) {
             case 0:  //nav_eventDetails
                 fragment = new MainPage();
-                fragmentName = "";
+                fragmentName = "EnduroTimer";
                 FAB_timer.show();
                 break;
             case 1: //nav_eventEntries
-              //  fragment = new NewRound();
-              //  fragmentName = "NewRound";
+                fragment = new EntriesPage();
+                fragmentName = "Select an Entry";
                 break;
             case 2: //nav_eventStages
                 fragment = new StagesPage();
-                fragmentName = "Stages";
+                fragmentName = "Select a Stage";
                 break;
             case 3:  //nav_eventResults
 
                 break;
             case 4:  //nav_timeRace
                 fragment = new TimerPage();
-                fragmentName = "Timer";
+                fragmentName = "EnduroTimer";
                 FAB_timer.hide();
                 break;
             case 5: //nav_loadEvent
-
+                fragment = new EventSelectorPage();
+                fragmentName = "Select Event";
+                FAB_timer.hide();
+                FAB_info.hide();
                 break;
             case 6: //nav_syncEvent
 
@@ -233,7 +254,8 @@ public class MainActivity extends AppCompatActivity
 
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            getSupportActionBar().setTitle("EnduroTimer - "+ fragmentName);
+            getSupportActionBar().setTitle(fragmentName);
+            ft.addToBackStack("");
             ft.replace(R.id.content_frame, fragment);
             ft.commit();
         }
@@ -406,13 +428,13 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(String result) {
             if (result != null) {
                 long NFCTime = System.currentTimeMillis();
-                String checkString = result.substring(0,10);
+                String checkString = result.substring(0,7);
                 int resultLength = result.length();
-                if ((checkString.equals("EnduroTimer")) && (resultLength == 47)) {
-                    String participantUUID = result.substring(11,47);
+                if ((checkString.equals("Enduro-")) && (resultLength == 43)) {
+                    String participantUUID = result.substring(7,43);
                     myAppState.CDS.setStageTime(participantUUID, myAppState.getStageID(), NFCTime, myAppState.timingStart());
                 }
-                TV_NFCStatus.setText("Read content: " + result);
+               // TV_NFCStatus.setText("Read content: " + result);
             }
         }
     }

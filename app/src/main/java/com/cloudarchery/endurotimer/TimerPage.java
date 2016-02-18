@@ -153,8 +153,8 @@ public class TimerPage extends Fragment{
                     }
                     historyListAdapter.updateData(myApp.timerHistoryList);
                 } else {
-                    TV_participantStart.setText("Timing tag could not be matched.  No time recorded");
-                    TV_participantFinish.setText("Timing tag could not be matched.  No time recorded");
+                    TV_participantStart.setText("Timing tag not matched.  No time recorded");
+                    TV_participantFinish.setText("Timing tag not matched.  No time recorded");
                 }
             }
         };

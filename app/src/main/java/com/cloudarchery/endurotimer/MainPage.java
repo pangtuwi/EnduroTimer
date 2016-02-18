@@ -46,6 +46,8 @@ public class MainPage extends Fragment {
             }
         };
 
+
+
       /*  myAppState.CDS.myConnectionListener = new ClubFirebase.OnConnectionListener() {
             @Override
             public void onConnectionUpdated(Boolean SyncOn, Boolean Network, Boolean CDSConnected, Boolean Authenticated, Boolean Linked, String ErrorMessage) {

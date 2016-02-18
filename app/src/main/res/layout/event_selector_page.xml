@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     tools:context=".MyActivity">
 
-<TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Select an Event"
-    android:layout_marginLeft="10dp"
-    android:layout_marginTop="10dp"
-    android:textColor="@color/abc_primary_text_material_light"
-    android:textStyle="bold"
-    android:textSize="@dimen/abc_text_size_medium_material" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginBottom="100dp">
 
-    <ListView
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select an Event"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/abc_primary_text_material_light"
+        android:textStyle="bold"
+        android:textSize="@dimen/abc_text_size_medium_material" />
+        </FrameLayout>
+
+        <ListView
         android:id="@+id/event_selector_page_listview"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:layout_weight="1"
+
+
         />
 
 
@@ -31,12 +44,15 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:text="No events found.   Please check your connection."
-        android:id="@+id/event_selector_page_NoStageHint"
+        android:id="@+id/event_selector_page_NoEventHint"
         android:layout_gravity="center_horizontal"
         android:textAlignment="center"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginTop="140dp" />
 
+    </FrameLayout>
 
-</FrameLayout>
+
+
+    </LinearLayout>
