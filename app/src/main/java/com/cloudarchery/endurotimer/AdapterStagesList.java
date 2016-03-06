@@ -20,14 +20,14 @@ import java.util.Date;
  * Created by paulwilliams on 01/01/15.
  */
 
-public class JSONAdapterUsersList extends BaseAdapter {
+public class AdapterStagesList extends BaseAdapter {
 
     Context mContext;
     LayoutInflater mInflater;
     JSONArray mJsonArray;
     //MyApp myAppState;
 
-    public JSONAdapterUsersList(Context context, LayoutInflater inflater) {
+    public AdapterStagesList(Context context, LayoutInflater inflater) {
         mContext = context;
         mInflater = inflater;
         mJsonArray = new JSONArray();
@@ -62,14 +62,15 @@ public class JSONAdapterUsersList extends BaseAdapter {
         if (convertView == null) {
 
             // Inflate the custom row layout from your XML.
-            convertView = mInflater.inflate(R.layout.row_user, null);
+            convertView = mInflater.inflate(R.layout.row_stage, null);
 
             // create a new "Holder" with subviews
             holder = new ViewHolder();
             //holder.thumbnailImageView = (ImageView) convertView.findViewById(R.id.img_thumbnail);
-            holder.roundTypeTextView = (TextView) convertView.findViewById(R.id.row_user_name);
-          //  holder.roundDateTextView = (TextView) convertView.findViewById(R.id.rowround_rounddate);
-           // holder.roundScoreTextView = (TextView) convertView.findViewById(R.id.rowround_roundscore);
+            holder.stageNameTextView = (TextView) convertView.findViewById(R.id.row_stage_name);
+            holder.stageStartDescriptionTextView = (TextView) convertView.findViewById(R.id.row_stage_startdescription);
+            holder.stageFinishDescriptionTextView = (TextView) convertView.findViewById(R.id.row_stage_finishdescription);
+            // holder.roundScoreTextView = (TextView) convertView.findViewById(R.id.rowround_roundscore);
 
             // hang onto this holder for future recyclage
             convertView.setTag(holder);
@@ -80,23 +81,25 @@ public class JSONAdapterUsersList extends BaseAdapter {
 
 
         // Get the data in JSON form
-        JSONObject roundJSON = (JSONObject) getItem(position);
+        JSONObject stageJSON = (JSONObject) getItem(position);
 
-        // Keeping above as not sure if need later
-         //holder.thumbnailImageView.setImageResource(R.drawable.ic_launcher);
+        String stageName = "";
+        String stageStartDescription = "";
+        String stageFinishDescription = "";
 
-        String roundType = "";
-        String roundDate = "";
-        String roundScore = "";
-
-    /*    try {
-      //      if (roundJSON.has("roundType")) {
-       //         roundType = roundJSON.getJSONObject("roundType").optString("name");
-        //    }
-        } catch (JSONException e) {
+        try {
+            if (stageJSON.has("stageName")) {
+                stageName = stageJSON.optString("stageName");
+            }
+            if (stageJSON.has("startDescription")) {
+                stageStartDescription = "from: "+stageJSON.optString("startDescription");
+            }
+            if (stageJSON.has("finishDescription")) {
+                stageFinishDescription = "to: "+stageJSON.optString("finishDescription");
+            }
+        } catch (Throwable e) {
             e.printStackTrace();
-
-        } */
+        }
 
      /*   if (roundJSON.has("createdAt")) {
             //authorName = jsonObject.optJSONArray("author_name").optString(0);
@@ -123,9 +126,9 @@ public class JSONAdapterUsersList extends BaseAdapter {
  */
 
 // Send these Strings to the TextViews for display
-        holder.roundTypeTextView.setText("Hello World 7");
-        holder.roundDateTextView.setText(roundDate);
-        holder.roundScoreTextView.setText(roundScore);
+        //holder.roundTypeTextView.setText("Hello World 7");
+        holder.stageNameTextView.setText(stageName);
+        holder.stageStartDescriptionTextView.setText(stageStartDescription);
 
         return convertView;
     }
@@ -138,9 +141,10 @@ public class JSONAdapterUsersList extends BaseAdapter {
 
     // this is used so you only ever have to do inflation and finding by ID once ever per View
     private static class ViewHolder {
-        public ImageView thumbnailImageView;
-        public TextView roundTypeTextView;
-        public TextView roundDateTextView;
-        public TextView roundScoreTextView;
+        //public ImageView thumbnailImageView;
+        public TextView stageNameTextView;
+        public TextView stageStartDescriptionTextView;
+        public TextView stageFinishDescriptionTextView;
+        //public TextView stageEnTextView;
     }
 }

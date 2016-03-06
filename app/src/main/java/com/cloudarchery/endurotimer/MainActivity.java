@@ -9,6 +9,7 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.tech.Ndef;
 import android.nfc.Tag;
+import android.nfc.tech.NdefFormatable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -28,7 +29,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity
@@ -221,7 +224,7 @@ public class MainActivity extends AppCompatActivity
                 FAB_timer.show();
                 break;
             case 1: //nav_eventEntries
-                fragment = new EntriesPage();
+                fragment = new FragmentEntries();
                 fragmentName = "Select an Entry";
                 break;
             case 2: //nav_eventStages
@@ -229,15 +232,16 @@ public class MainActivity extends AppCompatActivity
                 fragmentName = "Select a Stage";
                 break;
             case 3:  //nav_eventResults
-
+                fragment = new FragmentResults();
+                fragmentName = "Current Race Standings";
                 break;
             case 4:  //nav_timeRace
-                fragment = new TimerPage();
+                fragment = new FragmentTimer();
                 fragmentName = "EnduroTimer";
                 FAB_timer.hide();
                 break;
             case 5: //nav_loadEvent
-                fragment = new EventSelectorPage();
+                fragment = new FragmentEvents();
                 fragmentName = "Select Event";
                 FAB_timer.hide();
                 FAB_info.hide();
@@ -281,22 +285,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void handleIntent(Intent intent) {
-        Log.d("NFC", "in handleIntent");
+        Log.d("EnduroTimer", "in handleIntent");
         String action = intent.getAction();
-        Log.d("NFC", "String is " + action);
+        Log.d("EnduroTimer", "NFC action String is " + action);
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-
+            Log.d ("EnduroTimer", "executing ACTION_NDEF_DISCOVERED with App NFC Mode = "+MyApp.NFCMode);
             String type = intent.getType();
             if (MIME_TEXT_PLAIN.equals(type)) {
 
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                new NdefReaderTask().execute(tag);
+                if (MyApp.NFCMode == 1) {
+                    new NdefReaderTask().execute(tag);
+                } else if (MyApp.NFCMode == 2) {
+                    NDEFWriteResponse wr = writeTag(getTagAsNDEF(), tag);
+                    Log.d("EnduroTimer", "NFC Tag Write Returned : " +wr.getMessage());
+                    Toast.makeText(myAppState, wr.getMessage(), Toast.LENGTH_SHORT).show();
+                }
 
             } else {
-                Log.d(TAG, "Wrong mime type: " + type);
+                Log.d("EnduroTimer", "Wrong mime type: " + type);
             }
         } else if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-            Log.d ("NFC", "ACTION_TECH_DISCOVERED");
+            Log.d ("EnduroTimer", "executing ACTION_TECH_DISCOVERED");
             // In case we would still use the Tech Discovered Intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String[] techList = tag.getTechList();
@@ -308,6 +318,16 @@ public class MainActivity extends AppCompatActivity
                     break;
                 }
             }
+        } else if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+            Log.d ("EnduroTimer", "executing ACTION_TAG_DISCOVERED with App NFC Mode = "+MyApp.NFCMode);
+            //String type = intent.getType();
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            if (MyApp.NFCMode == 2) {
+                    NDEFWriteResponse wr = writeTag(getTagAsNDEF(), tag);
+                    Log.d("EnduroTimer", "NFC Tag Write Returned : " +wr.getMessage());
+                    Toast.makeText(myAppState, wr.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
         }
     }
 
@@ -378,7 +398,7 @@ public class MainActivity extends AppCompatActivity
             Ndef ndef = Ndef.get(tag);
             if (ndef == null) {
                 // NDEF is not supported by this Tag.
-                Log.d(TAG, "NDEF not supported by Tag");
+                Log.d("EnduroTimer", "NDEF not supported by Tag");
                 return null;
             }
 
@@ -390,7 +410,7 @@ public class MainActivity extends AppCompatActivity
                     try {
                         return readText(ndefRecord);
                     } catch (UnsupportedEncodingException e) {
-                        Log.e(TAG, "Unsupported Encoding", e);
+                        Log.e("EnduroTimer", "Unsupported Encoding", e);
                     }
                 }
             }
@@ -421,12 +441,14 @@ public class MainActivity extends AppCompatActivity
             // e.g. "en"
 
             // Get the Text
+
             return new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
         }
 
         @Override
         protected void onPostExecute(String result) {
             if (result != null) {
+                Log.d("Endurotimer", "Read NFC Tag : "+result);
                 long NFCTime = System.currentTimeMillis();
                 String checkString = result.substring(0,7);
                 int resultLength = result.length();
@@ -437,7 +459,77 @@ public class MainActivity extends AppCompatActivity
                // TV_NFCStatus.setText("Read content: " + result);
             }
         }
+    } //NDEFReaderTask
+
+
+    //--------- WRITE NDEF -------------
+
+    public NDEFWriteResponse writeTag (NdefMessage message, Tag tag){
+        int size = message.toByteArray().length;
+        String mess = "";
+        try {
+            Ndef ndef = Ndef.get(tag);
+            if (ndef != null){
+                ndef.connect();
+                if (!ndef.isWritable()){
+                    return new NDEFWriteResponse(0, "Tag is read only");
+                }
+                if (ndef.getMaxSize() < size){
+                    return new NDEFWriteResponse(0, "Tag insuficient Capacity");
+                }
+                ndef.writeNdefMessage(message);
+                //if (writeProtect)ndef.makeReadOnly();
+                return new NDEFWriteResponse(1, "Wrote Entrant ID to Tag");
+            } else {
+                NdefFormatable format = NdefFormatable.get(tag);
+                if (format != null){
+                    try{
+                        format.connect();
+                        format.format(message);
+                        return new NDEFWriteResponse(1, "Formatted tag and wrote message");
+                    } catch (IOException e) {
+                        return new NDEFWriteResponse(0, "Failed to format Tag");
+                    }
+                } else {
+                    return new NDEFWriteResponse(0, "Tag does not support NDEF");
+                }
+            }
+        } catch (Exception e) {
+            return new NDEFWriteResponse(0, "Failed to write Tag");
+        }
     }
 
 
+    private class NDEFWriteResponse {
+        int status;
+        String message;
+
+        NDEFWriteResponse (int Status, String Message){
+            this.status = Status;
+            this.message = Message;
+        }
+
+        public int getStatus(){
+            return status;
+        }
+        public String getMessage() {
+            return message;
+        }
+    } //NDEFWriteResponse
+
+    private NdefMessage getTagAsNDEF() {
+       // boolean addAAR = false;
+        String uniqueID = "Enduro-"+myAppState.selectedEntrantID;
+        byte[] uriField = uniqueID.getBytes(Charset.forName("UTF-8"));
+        byte[] payload = new byte[uriField.length +2];
+        payload[0] = 0x01;
+        //payload[0] = 0063;
+        //byte[] payload = new byte[uriField.length];
+        //byte[] payload = uniqueID.getBytes(Charset.forName("US-ASCII"));
+        //byte[] payload = uniqueID.getBytes(Charset.forName("UTF-8"));
+        System.arraycopy(uriField, 0, payload, 2, uriField.length);
+        //NdefRecord rtdUriRecord = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_URI, new byte[0], payload);
+        NdefRecord rtdUriRecord = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], payload);
+        return new NdefMessage(new NdefRecord[]{rtdUriRecord});
+    }
 }

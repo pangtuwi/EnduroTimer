@@ -20,7 +20,7 @@ public class StagesPage extends Fragment implements AdapterView.OnItemClickListe
     ListView mainListView;
     TextView textViewConnectionStatus;
     TextView warningTextView;
-    JSONAdapterStagesList mJSONAdapter;
+    AdapterStagesList mJSONAdapter;
 
     String userID = "";
     String roundID = "";
@@ -46,7 +46,7 @@ public class StagesPage extends Fragment implements AdapterView.OnItemClickListe
 
         mainListView = (ListView) rootView.findViewById(R.id.stages_page_listview);
         mainListView.setOnItemClickListener(this);
-        mJSONAdapter = new JSONAdapterStagesList(getActivity(), getActivity().getLayoutInflater());
+        mJSONAdapter = new AdapterStagesList(getActivity(), getActivity().getLayoutInflater());
         mainListView.setAdapter(mJSONAdapter);
 
         if (myAppState.CDS.stages.length() > 0) {

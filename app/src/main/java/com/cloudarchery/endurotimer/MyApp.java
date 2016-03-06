@@ -24,9 +24,11 @@ public class MyApp extends Application {
     private boolean stageIsSelected;
     private boolean timingStart = true;
     private static boolean activityVisible;
+    public static int NFCMode = 0;   //0 = off, 1 = read, 2 = write
 
     public static CloudData CDS;
     public List <String> timerHistoryList;
+    public String selectedEntrantID;
 
 
     @Override
@@ -48,8 +50,8 @@ public class MyApp extends Application {
         return MyApp.mContext;
     }
 
-    public void startTiming () { timingActive = true;}
-    public void stopTiming () { timingActive = false;}
+    public void startTiming () { timingActive = true;        NFCMode = 1;}
+    public void stopTiming () { timingActive = false;         NFCMode = 0;}
     public boolean timingIsActive () {return timingActive;}
 
     public void setStageID (int newStageNo) {
@@ -60,8 +62,13 @@ public class MyApp extends Application {
     public void setStageSelectedOff(){stageIsSelected = false;}
     public int getStageID () {return stageID;}
 
-    public void setTimingStart() {timingStart = true;}
-    public void setTimingFinish() {timingStart = false;}
+    public void setTimingStart() {
+        timingStart = true;
+    }
+    public void setTimingFinish() {
+        timingStart = false;
+
+    }
     public boolean timingStart() {return timingStart;}
 
     public void addHistoryListItem (String newHistoryItem) {
@@ -83,6 +90,10 @@ public class MyApp extends Application {
         activityVisible = false;
         Log.d("EnduroTimer", "activity Paused");
 
+    }
+
+    public static void setNFCMode(int newMode){
+        NFCMode = newMode;
     }
 
 

@@ -3,23 +3,19 @@ package com.cloudarchery.endurotimer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import org.json.JSONObject;
 
 
 public class StageSelectorPage extends Fragment implements AdapterView.OnItemClickListener{
 
     ListView mainListView;
     TextView warningTextView;
-    JSONAdapterStagesList mJSONAdapter;
+    AdapterStagesList mJSONAdapter;
 
     MyApp myApp;
 
@@ -37,7 +33,7 @@ public class StageSelectorPage extends Fragment implements AdapterView.OnItemCli
 
         mainListView = (ListView) rootView.findViewById(R.id.stage_selector_page_listview);
         mainListView.setOnItemClickListener(this);
-        mJSONAdapter = new JSONAdapterStagesList(getActivity(), getActivity().getLayoutInflater());
+        mJSONAdapter = new AdapterStagesList(getActivity(), getActivity().getLayoutInflater());
         mainListView.setAdapter(mJSONAdapter);
 
         if (myApp.CDS.stages.length() > 0) {

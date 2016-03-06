@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/abc_background_cache_hint_selector_material_dark">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/entrant_page_imageButton_back"
+                android:contentDescription="Cancel"
+                android:src="@android:drawable/ic_menu_revert" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/entrant_page_imageButton_save"
+                android:contentDescription="Save"
+                android:src="@android:drawable/ic_menu_save" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/entrant_page_imageButton_writeNFC"
+                android:src="@android:drawable/ic_menu_upload_you_tube" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:backgroundTint="@color/abc_background_cache_hint_selector_material_dark">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/accent_material_dark"
+            android:backgroundTintMode="add" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/entrant_page_textview_detailstitle"
+            android:text="Entrant Details"
+            android:textStyle="bold"
+            android:layout_marginTop="00dp"
+            android:textSize="16dp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="80dp">
+
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/entrantpage_editText_name"
+                android:hint="Entrant Name"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Race Number"
+                android:id="@+id/entrantpage_editText_raceNo" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="UUID"
+                android:clickable="false"
+                android:editable="false"
+                android:id="@+id/entrantpage_editText_UUID" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/accent_material_dark"
+        android:backgroundTintMode="add"
+        style="@style/AppTheme"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/entrant_page_textview_resultstitle"
+        android:text="Stage Results"
+        android:textStyle="bold"
+        android:layout_marginTop="00dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="16dp" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:id="@+id/entrant_page_resultsListView" />
+</LinearLayout>

@@ -1,8 +1,11 @@
 package com.cloudarchery.endurotimer;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,17 +17,22 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
+import java.util.Map;
 
-public class EntriesPage extends Fragment implements AdapterView.OnItemClickListener{
+
+public class FragmentEntries extends Fragment implements AdapterView.OnItemClickListener{
     ImageView imageViewConnection;
     ListView mainListView;
     TextView warningTextView;
     AdapterEntriesList mAdapter;
     MyApp myAppState;
+
+    private FragmentActivity myContext;
+
     //ClubFirebase CDS;
 
 
-    public EntriesPage(){}
+    public FragmentEntries(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,12 +60,26 @@ public class EntriesPage extends Fragment implements AdapterView.OnItemClickList
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        //JSONObject entryJSON = mAdapter.getItem(position);
+
+        Map<String, Object> entryItem = mAdapter.getItem(position);
+        if (entryItem.containsKey("id")){
+            myAppState.selectedEntrantID = (String) entryItem.get("id");
+        }
 
         try {
 
+            Fragment fragment = new FragmentEntrant();
+
+            if (fragment != null) {
+                FragmentTransaction ft = myContext.getSupportFragmentManager().beginTransaction();
+                // ((AppCompatActivity)getActivity().getSupportActionBar().setTitle("Select Stage to Time");
+                ft.addToBackStack("");
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
+            }
+
         } catch (Throwable t) {
-            Log.e("EnduroTimer", "Error getting id from JSON (EntriesPage.onItemClick)");
+            Log.e("EnduroTimer", "Error opening FragmentEntrant (FragmentEntries)");
             t.printStackTrace();
         }
     }// OnItemClick
@@ -67,6 +89,13 @@ public class EntriesPage extends Fragment implements AdapterView.OnItemClickList
 
 
     } //loadRoundData
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        myContext=(FragmentActivity) activity;
+        super.onAttach(activity);
+    }
 
     @Override
     public void onDestroyView (){

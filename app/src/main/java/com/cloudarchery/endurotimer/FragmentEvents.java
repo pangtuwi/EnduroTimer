@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
-public class EventSelectorPage extends Fragment implements AdapterView.OnItemClickListener{
+public class FragmentEvents extends Fragment implements AdapterView.OnItemClickListener{
 
     ListView mainListView;
     TextView warningTextView;
@@ -23,7 +23,7 @@ public class EventSelectorPage extends Fragment implements AdapterView.OnItemCli
 
     MyApp myApp;
 
-    public EventSelectorPage(){}
+    public FragmentEvents(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -18,7 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
-public class TimerPage extends Fragment{
+public class FragmentTimer extends Fragment{
 
     MyApp myApp;
     Button B_stage;
@@ -39,7 +39,7 @@ public class TimerPage extends Fragment{
 
     private FragmentActivity myContext;
 
-    public TimerPage(){}
+    public FragmentTimer(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,6 +73,7 @@ public class TimerPage extends Fragment{
             TV_stageNameFinish.setText("Stage (" + thisStageID+1 + ") FINISH : " + myApp.CDS.getStageName(thisStageID));
             B_Go.setEnabled(true);
             B_Stop.setEnabled(true);
+            myApp.startTiming();
         }
 
         LV_timingHistory = (ListView) rootView.findViewById(R.id.timer_page_listView);
@@ -170,6 +171,7 @@ public class TimerPage extends Fragment{
     }
 
 
+    //ToTo : Turn off Timing on exit myApp.stopTiming();
 
 
 

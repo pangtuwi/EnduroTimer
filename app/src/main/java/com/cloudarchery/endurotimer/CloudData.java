@@ -6,6 +6,7 @@ package com.cloudarchery.endurotimer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Telephony;
 import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
@@ -19,11 +20,13 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class CloudData {
@@ -40,6 +43,7 @@ public class CloudData {
     Map<String, Object> users;
     List<Object> events;
     Map<String, Object> event;
+    JSONArray results;
     List<Object> entries;
     static JSONArray stages;
     //String eventID = "ab80993d-74f6-4b39-bd10-cabd05a97442";
@@ -170,24 +174,24 @@ public class CloudData {
         SharedPreferences.Editor e = sharedPreferences.edit();
         e.putString(myContext.getString(R.string.shared_prefs_string_EVENTID), eventID);
         e.commit();
-        Log.d("EnduroTimer", "Saved EventID : "+eventID);
+        Log.d("EnduroTimer", "Saved EventID : " + eventID);
 
         myFirebaseRef.child("eventData/"+eventID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
                     eventLoaded = true;
-                   // Log.d ("EnduroTimer", "Event Loaded");
+                    // Log.d ("EnduroTimer", "Event Loaded");
                     event = (Map<String, Object>) snapshot.getValue();
                     try {
-                        eventName = (String)event.get("eventName");
-                        eventDateMs = (long)event.get("eventStartsAt");
+                        eventName = (String) event.get("eventName");
+                        eventDateMs = (long) event.get("eventStartsAt");
                         if (eventDateMs > 0) {
                             Date eventDateDate = new Date(eventDateMs);
                             String DATE_FORMAT_NOW = "EEEE dd MMMM yyyy";
                             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
                             eventDate = sdf.format(eventDateDate);
-                           // Log.d("EnduroTimer", "Event date of "+ eventDateMs + " converted to "+eventDate);
+                            // Log.d("EnduroTimer", "Event date of "+ eventDateMs + " converted to "+eventDate);
                         }
                         Object entriesObj = event.get("participants");
 
@@ -208,7 +212,10 @@ public class CloudData {
 
                 }
             }
-            @Override public void onCancelled(FirebaseError error) { }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+            }
         });
 
         myFirebaseRef.child("eventData/"+eventID+"/stages").addValueEventListener(new ValueEventListener() {
@@ -221,13 +228,35 @@ public class CloudData {
 
                     } catch (Throwable t) {
                         t.printStackTrace();
-                        Log.e("EnduroTimer", "Error extracting JSON Array (CloudData)");
+                        Log.e("EnduroTimer", "Error extracting JSON Array on stages read (CloudData)");
                     }
 
                 }
             }
             @Override public void onCancelled(FirebaseError error) { }
         });
+
+        myFirebaseRef.child("eventData/"+eventID+"/results/").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    List resultsList = (List) snapshot.getValue();
+                    try {
+                        results = new JSONArray(resultsList);
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        Log.e("EnduroTimer", "Error extracting JSON Array on Results read (CloudData)");
+                    }
+
+                   // if (myEventsListUpdatedListener != null) myEventsListUpdatedListener.onEventsListUpdated();
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+            }
+        });
+
     }//loadEvent
 
     public void changeEvent(int eventNo){
@@ -292,6 +321,7 @@ public class CloudData {
 
     //LogTime : Registers a captured NFC tag as a start or stop time for a given stage
     public void setStageTime (String participantUUID, int stageID, long loggedTimeMs, boolean isStart) {
+        Log.d("Endurotimer", "Attempting setStageTimer for :"+ participantUUID+".");
         String startString;
         if (isStart) {startString = "start";} else {startString = "finish";}
         String stageDescription = startString + " of "+ getStageName(stageID);
@@ -329,10 +359,99 @@ public class CloudData {
 
             myParticipantTimeListener.onParticipantTimeRegistered(true, participantName , loggedTimeString, stageDescription, isStart);
         } else {
+            Log.d ("EnduroTimer", "Participant Tag not found.");
             myParticipantTimeListener.onParticipantTimeRegistered(false, "", "", "", false);
         }
     } //logTime
+
+
+
+    public void updateResults(){
+        //parses current data and updates the list of current result standings.
+        //Results Structure :
+        //
+        //TODO: Needs an upDatedAt to avoid continuous unnecessary overwrite
+        //final List<Object> participants = new ArrayList<Object>();
+
+        myFirebaseRef.child("eventData/"+eventID+"/participants/").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    List<ParticipantResult> participantResults = new ArrayList<ParticipantResult>();
+                    Map<String, Object> stagesMap = (HashMap<String, Object>) snapshot.getValue();
+                    Iterator it = stagesMap.entrySet().iterator();
+                    while (it.hasNext()) {
+
+                        Map.Entry participant = (Map.Entry) it.next();
+                        ParticipantResult participantResult = new ParticipantResult();
+                        //  participantResult.participantName = (String) participant.getValue();
+                        HashMap thisParticipant = (HashMap) participant.getValue();
+                        if (thisParticipant.containsKey("name")) {
+                            participantResult.participantName = (String) thisParticipant.get("name");
+                        }
+                        if (thisParticipant.containsKey("raceNo")) {
+                            participantResult.raceNo = (String) thisParticipant.get("raceNo");
+                        }
+                        if (thisParticipant.containsKey("stageTimes")) {
+                            ArrayList thisTimeSet = (ArrayList) thisParticipant.get("stageTimes");
+                            long startTime = 0;
+                            long finishTime = 0;
+                            for (int i = 0; i < stages.length(); i++) {
+                                HashMap times = (HashMap) thisTimeSet.get(0);
+                                if (times.containsKey("start")) {
+                                    startTime = (Long) times.get("start");
+                                }
+                                if (times.containsKey("finish")) {
+                                    finishTime = (Long) times.get("finish");
+                                }
+                                participantResult.setStageTime(i, startTime, finishTime);
+                            }
+                            participantResult.calcRaceTime(stages.length());
+                        }
+                        participantResults.add(participantResult);
+                        // results.add(pair.getValue());
+                        it.remove(); // avoids a ConcurrentModificationException
+                    }
+
+                    Collections.sort(participantResults);
+                    Map <String, Object> resultsMap = new HashMap<String, Object>();
+                    Iterator i = participantResults.iterator();
+                    int count = 0;
+                    while (i.hasNext()) {
+                        //Map.Entry pair = (Map.Entry) i.next();
+                        ParticipantResult thisPR = (ParticipantResult)i.next();
+                        //entries.add(pair.getValue());
+                        //results.add(thisPR);  not necessary as should update via watcher
+                        resultsMap.put(""+count, thisPR.asHashMap());
+                        i.remove(); // avoids a ConcurrentModificationException
+                        count ++;
+                    }
+
+
+
+                    myFirebaseRef.child("eventData/"+eventID+"/results/").updateChildren(resultsMap, new Firebase.CompletionListener() {
+                        @Override
+                        public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                            if (firebaseError != null) {
+                            } else {
+                            }
+                        }
+                    });
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+            }
+        });
+
+
+
+
+
+    } //getResults
+
 }
-
-
 //ToDo : Add event history to database
