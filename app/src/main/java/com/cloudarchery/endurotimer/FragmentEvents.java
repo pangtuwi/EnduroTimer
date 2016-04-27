@@ -64,6 +64,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View dialoglayout = inflater.inflate(R.layout.event_password, null);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(dialoglayout);
 

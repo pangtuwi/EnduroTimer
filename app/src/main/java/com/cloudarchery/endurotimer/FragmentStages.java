@@ -15,7 +15,7 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 
-public class StagesPage extends Fragment implements AdapterView.OnItemClickListener{
+public class FragmentStages extends Fragment implements AdapterView.OnItemClickListener{
     ImageView imageViewConnection;
     ListView mainListView;
     TextView textViewConnectionStatus;
@@ -29,7 +29,7 @@ public class StagesPage extends Fragment implements AdapterView.OnItemClickListe
     //ClubFirebase CDS;
 
 
-    public StagesPage(){}
+    public FragmentStages(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -160,7 +160,7 @@ public class StagesPage extends Fragment implements AdapterView.OnItemClickListe
 
 
         } catch (Throwable t) {
-            Log.e("EnduroTimer", "Error getting id from JSON (StagesPage.onItemClick)");
+            Log.e("EnduroTimer", "Error getting id from JSON (FragmentStages.onItemClick)");
             t.printStackTrace();
         }
     }// OnItemClick

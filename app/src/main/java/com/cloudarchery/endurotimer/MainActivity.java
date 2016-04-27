@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity
     TextView TV_ConnectionStatus;
     FloatingActionButton FAB_timer;
     FloatingActionButton FAB_info;
+    FloatingActionButton FAB_add;
     private NfcAdapter mNfcAdapter;
     public static final String MIME_TEXT_PLAIN = "text/plain";
 
@@ -62,12 +63,11 @@ public class MainActivity extends AppCompatActivity
         FAB_timer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //     Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //            .setAction("Action", null).show();
-
                 displayView(4);
             }
         });
+
+
 
 
         FAB_info = (FloatingActionButton) findViewById(R.id.fab_info);
@@ -222,13 +222,16 @@ public class MainActivity extends AppCompatActivity
                 fragment = new MainPage();
                 fragmentName = "EnduroTimer";
                 FAB_timer.show();
+                FAB_info.show();
                 break;
             case 1: //nav_eventEntries
                 fragment = new FragmentEntries();
                 fragmentName = "Select an Entry";
+                FAB_timer.hide();
+                FAB_info.hide();
                 break;
             case 2: //nav_eventStages
-                fragment = new StagesPage();
+                fragment = new FragmentStages();
                 fragmentName = "Select a Stage";
                 break;
             case 3:  //nav_eventResults
@@ -236,9 +239,11 @@ public class MainActivity extends AppCompatActivity
                 fragmentName = "Current Race Standings";
                 break;
             case 4:  //nav_timeRace
-                fragment = new FragmentTimer();
-                fragmentName = "EnduroTimer";
+                fragment = new FragmentTimerSelector();
+                fragmentName = "Select Stage to Time";
                 FAB_timer.hide();
+                FAB_info.hide();
+                FAB_add.hide();
                 break;
             case 5: //nav_loadEvent
                 fragment = new FragmentEvents();
@@ -264,12 +269,6 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
         }
 
-            // update selected item and title, then close the drawer
-           // mDrawerList.setItemChecked(position, true);
-           // mDrawerList.setSelection(position);
-           // setTitle(navPageTitles[position]);
-
-           // mDrawerLayout.closeDrawer(mDrawerList);
 
     }
     @Override

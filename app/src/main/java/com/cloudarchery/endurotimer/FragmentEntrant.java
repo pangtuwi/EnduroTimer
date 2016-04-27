@@ -16,13 +16,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class FragmentEntrant extends Fragment {
 
     ListView LVResults;
 
-    ImageButton IBBAck;
+    ImageButton IBBack;
     ImageButton IBSave;
     ImageButton IBWriteNFC;
 
@@ -45,6 +46,8 @@ public class FragmentEntrant extends Fragment {
         final View rootView = inflater.inflate(R.layout.entrant_page, container, false);
 
         IBWriteNFC = (ImageButton) rootView.findViewById(R.id.entrant_page_imageButton_writeNFC);
+        IBSave = (ImageButton) rootView.findViewById(R.id.entrant_page_imageButton_save);
+        IBBack = (ImageButton) rootView.findViewById(R.id.entrant_page_imageButton_back);
 
         ETEntrantName = (EditText) rootView.findViewById(R.id.entrantpage_editText_name);
         ETEntrantRaceNo = (EditText) rootView.findViewById(R.id.entrantpage_editText_raceNo);
@@ -52,10 +55,11 @@ public class FragmentEntrant extends Fragment {
 
         if (!myApp.selectedEntrantID.equals("")) {
             ETEntrantID.setText(myApp.selectedEntrantID);
+            ETEntrantName.setText(MyApp.CDS.getParticipantName(myApp.selectedEntrantID));
+            ETEntrantRaceNo.setText(MyApp.CDS.getParticipantRaceNo(myApp.selectedEntrantID));
         }
 
         LVResults = (ListView) rootView.findViewById(R.id.entrant_page_resultsListView);
-        //LVResults.setOnItemClickListener(this);
         myResultsAdapter = new AdapterResultsList(getActivity(), getActivity().getLayoutInflater());
         LVResults.setAdapter(myResultsAdapter);
 
@@ -74,6 +78,43 @@ public class FragmentEntrant extends Fragment {
                 }
             }
         });
+
+        IBSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String entrantName = ETEntrantName.getText().toString();
+                String entrantRaceNo = ETEntrantRaceNo.getText().toString();
+                if (entrantName.equals("")) {
+                    Toast.makeText(myApp, "Cannot Save - no Entrant name", Toast.LENGTH_SHORT).show();
+                } else if (entrantRaceNo.equals("")){
+                    Toast.makeText(myApp, "Cannot Save - no Race no", Toast.LENGTH_SHORT).show();
+                } else if (!myApp.CDS.newParticipantRaceNoOk(entrantRaceNo)){
+                    Toast.makeText(myApp, "Cannot Save - Race No already taken", Toast.LENGTH_SHORT).show();
+                } else {
+                    myApp.CDS.addNewParticipant (myApp.selectedEntrantID, entrantName, entrantRaceNo);
+                    getFragmentManager().popBackStack();
+                }
+            }
+        });
+
+        IBBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String entrantName = ETEntrantName.getText().toString();
+                String entrantRaceNo = ETEntrantRaceNo.getText().toString();
+                if (entrantName.equals("")) {
+                    Toast.makeText(myApp, "Cannot Save - no Entrant name", Toast.LENGTH_SHORT).show();
+                } else if (entrantRaceNo.equals("")) {
+                    Toast.makeText(myApp, "Cannot Save - no Race no", Toast.LENGTH_SHORT).show();
+                } else if (!myApp.CDS.newParticipantRaceNoOk(entrantRaceNo)) {
+                    Toast.makeText(myApp, "Cannot Save - Race No already taken", Toast.LENGTH_SHORT).show();
+                } else {
+                    myApp.CDS.addNewParticipant(myApp.selectedEntrantID, entrantName, entrantRaceNo);
+                    getFragmentManager().popBackStack();
+                }
+            }
+        });
+
 
       /*  if (myApp.CDS.events.size() > 0) {
             myResultsAdapter.updateData(myApp.CDS.results);

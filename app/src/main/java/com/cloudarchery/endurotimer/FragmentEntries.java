@@ -3,6 +3,7 @@ package com.cloudarchery.endurotimer;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -15,9 +16,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
 import java.util.Map;
+import java.util.UUID;
 
 
 public class FragmentEntries extends Fragment implements AdapterView.OnItemClickListener{
@@ -26,6 +26,7 @@ public class FragmentEntries extends Fragment implements AdapterView.OnItemClick
     TextView warningTextView;
     AdapterEntriesList mAdapter;
     MyApp myAppState;
+    FloatingActionButton FAB_AddEntry;
 
     private FragmentActivity myContext;
 
@@ -48,8 +49,25 @@ public class FragmentEntries extends Fragment implements AdapterView.OnItemClick
         mAdapter = new AdapterEntriesList(getActivity(), getActivity().getLayoutInflater());
         mainListView.setAdapter(mAdapter);
 
+        FAB_AddEntry = (FloatingActionButton) getActivity().findViewById(R.id.fab_add);
+        FAB_AddEntry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FAB_AddEntry.hide();
+                myAppState.selectedEntrantID = UUID.randomUUID().toString();
+                Fragment fragment = new FragmentEntrant();
+                if (fragment != null) {
+                    FragmentTransaction ft = myContext.getSupportFragmentManager().beginTransaction();
+                    // ((AppCompatActivity)getActivity().getSupportActionBar().setTitle("Select Stage to Time");
+                    ft.addToBackStack("");
+                    ft.replace(R.id.content_frame, fragment);
+                    ft.commit();
+                }
+            }
+        });
+
         if (myAppState.CDS.stages.length() > 0) {
-            mAdapter.updateData(myAppState.CDS.entries);
+            mAdapter.updateData(myAppState.CDS.entriesList);
             rootView.findViewById(R.id.entry_selector_page_no_entries_hint).setVisibility(View.INVISIBLE);
         }
 

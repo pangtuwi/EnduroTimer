@@ -1,11 +1,14 @@
 package com.cloudarchery.endurotimer;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by paulwilliams on 27/02/16.
@@ -29,6 +32,7 @@ public class ParticipantResult implements Comparable<ParticipantResult>{
 
         } else {
             stageTimes.add(stageNo, (finishTime-startTime));
+            Log.d("EnduroTimer", participantName+ " : "+ stageNo + " : " + (finishTime - startTime));
         }
     }
 
@@ -45,25 +49,36 @@ public class ParticipantResult implements Comparable<ParticipantResult>{
     @Override
     public int compareTo(ParticipantResult another) {
         if (this.totalTime == 0L) {
-            return -1;
+            return 1;
         }
         if (another.totalTime == 0L) {
-            return 1;
+            return -1;
         }
         if (this.totalTime<another.totalTime){
-            return 1;
-        }else{
             return -1;
+        }else{
+            return 1;
         }
     }
 
     public String raceTimeString(){
         String rTS = "00:00:00";
         if (totalTime > 0){
-            Date racetimeDate = new Date(totalTime);
-            String DATE_FORMAT_RACETIME = "HH:MM:SS";
+            Long millis = totalTime;
+
+      /*      Date racetimeDate = new Date(totalTime);
+            String DATE_FORMAT_RACETIME = "kk:mm:ss.S";
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_RACETIME);
             rTS = sdf.format(racetimeDate);
+            */
+            rTS = String.format("%02d:%02d:%02d.%d",
+                    TimeUnit.MILLISECONDS.toHours(millis),
+                    TimeUnit.MILLISECONDS.toMinutes(millis) -
+                            TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), // The change is in this line
+                    TimeUnit.MILLISECONDS.toSeconds(millis) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)),
+                    (millis - (1000*TimeUnit.MILLISECONDS.toSeconds(millis)))/100);
+            Log.d("EnduroTimer", "RaceTime for "+participantName + " = "+ totalTime + " which is " + rTS);
         }
         return rTS;
     }

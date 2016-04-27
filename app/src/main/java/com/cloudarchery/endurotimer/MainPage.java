@@ -2,6 +2,7 @@ package com.cloudarchery.endurotimer;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ public class MainPage extends Fragment {
     MyApp myAppState;
     TextView TV_EventName;
     TextView TV_EventDate;
+    FloatingActionButton FAB_timer;
 
     public MainPage(){}
 
@@ -29,6 +31,8 @@ public class MainPage extends Fragment {
         View rootView = inflater.inflate(R.layout.main_page, container, false);
         TV_EventName = (TextView) rootView.findViewById(R.id.main_page_eventName);
         TV_EventDate = (TextView) rootView.findViewById(R.id.main_page_eventDate);
+        FAB_timer = (FloatingActionButton) getActivity().findViewById(R.id.fab_timer);
+        FAB_timer.show();
 
         if (myAppState.CDS.eventLoaded) {
             TV_EventName.setText("Event : "+myAppState.CDS.eventName);

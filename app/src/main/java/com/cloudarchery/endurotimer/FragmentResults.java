@@ -50,7 +50,7 @@ public class FragmentResults extends Fragment implements AdapterView.OnItemClick
         myApp.CDS.myEventsListUpdatedListener = new CloudData.OnEventsListUpdatedListener() {
             @Override
             public void onEventsListUpdated() {
-                rootView.findViewById(R.id.event_selector_page_NoEventHint).setVisibility(View.INVISIBLE);
+                rootView.findViewById(R.id.results_page_NoResultsHint).setVisibility(View.INVISIBLE);
                 myResultsAdapter.updateData(myApp.CDS.results);
             }
         };
